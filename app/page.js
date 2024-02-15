@@ -3,8 +3,9 @@ import Footer from './comoponents/Footer'
 import Header from './comoponents/Header'
 import { getUserByEmail, createUser, getProducts } from '@/sanity/sanity-utils'
 import { currentUser } from '@clerk/nextjs'
+import PaginationControls from './comoponents/PaginationControls'
 
-export default async function page() {
+export default async function page({ searchParams }) {
   const user = await currentUser()
 
   if (!user) {
@@ -22,6 +23,16 @@ export default async function page() {
 
   const products = await getProducts()
 
+  ///for pagination //
+  const page = searchParams['page'] || '1'
+  const per_page = searchParams['per_page'] || '6'
+
+  // mocked, skipped, and limited in the real app
+  const start = (Number(page) - 1) * Number(per_page) // 0, 5, 10 ...
+  const end = start + Number(per_page) // 5, 10, 15 ...
+
+  const entries = products.slice(start, end)
+
   return (
     <div>
       <Header />
@@ -36,14 +47,22 @@ export default async function page() {
       </div>
       <div className="p-10">
         <div className=" max-auto grid grid-cols-1 lg:grid-cols-3 gap-14">
-          {products.map((item) => {
+          {entries.map((item) => {
             return <Card key={item._id} product={item} />
-          })}
-
-          {/* <Card /> */}
+          })}{' '}
         </div>
       </div>
-      <Footer className="py-5" />
+
+      <div className="py-10">
+        <PaginationControls
+          hasNextPage={end < products.length}
+          hasPrevPage={start > 0}
+        />
+      </div>
+
+      <div className="py-10 ">
+        <Footer />
+      </div>
     </div>
   )
 }

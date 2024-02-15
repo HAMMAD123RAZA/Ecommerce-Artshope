@@ -27,19 +27,19 @@ export async function getProductBySlug(slug) {
   }
   
   export async function getProducts() {
-  return client.fetch(
-    groq`*[_type=="product"]{
-            _id,
-            createdAt,
-            name,
-            description,
-            price,
-            "image":image.asset->url,
-            "slug":slug.current,
-        }`
-  )
-}
-
+    return client.fetch(
+      groq`*[_type=="product"]{
+              _id,
+              createdAt,
+              name,
+              description,
+              price,
+              "image":image.asset->url,
+              "slug":slug.current,
+          }`
+    )
+  }
+          
 export async function getUserByEmail(email) {
   const query = groq`*[_type=="user"]{
         _id,
